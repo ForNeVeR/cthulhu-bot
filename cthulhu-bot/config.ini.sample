@@ -1,0 +1,21 @@
+[login]
+# Info about bot account
+jid=example@example.com/example
+password=password
+
+[master]
+# Info about bot master(s)
+jid=master@example.com
+
+[info]
+# Bot info
+nick="Cthonian vacuum cleaner"
+
+[muc]
+# MUC info
+default_service=conference.jabber.ru
+
+[autojoin]
+# list of autojoined rooms
+room=room1
+room=room2

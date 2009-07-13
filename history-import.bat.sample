@@ -1,0 +1,2 @@
+Release\history-import.exe --miranda --from="/from/path" --to="/path/cthulhu-bot/logs" --conf-name="room1@conference.jabber.ru" --minutes-delta=-420
+Release\history-import.exe --miranda --from="/from/path" --to="/path/cthulhu-bot/logs" --conf-name="room1@conference.jabber.ru" --minutes-delta=-420
