@@ -1,19 +1,29 @@
+/*
+ * unicode.cpp
+ * Source file for UTF8 text conversion. Uses utfcpp, see
+ * <http://utfcpp.sourceforge.net/>.
+ */
 #include "unicode.h"
 
-#include <unicode/unistr.h>
-
+#include <vector>
 using namespace std;
 
-string utf8(const wchar_t *wc_string)
+#include "../utfcpp/source/utf8.h"
+
+string UTF8(const wchar_t *wc_string)
 {
-    UnicodeString u16_string(wc_string);
-    string u8_string;
-    u16_string.toUTF8String(u8_string);
-    return u8_string;
+    string utf8_string;
+    utf8::utf16to8(&wc_string[0], &wc_string[wcslen(wc_string)],
+        back_inserter(utf8_string));
+
+    return utf8_string;
 }
 
-wstring deUtf8(const string u8_string)
+wstring deUTF8(const string utf8_string)
 {
-    UnicodeString u16_string = UnicodeString::fromUTF8(u8_string);
-    return wstring(u16_string.getBuffer());
+    wstring utf16_string;
+    utf8::utf8to16(utf8_string.begin(), utf8_string.end(),
+        back_inserter(utf16_string));
+
+    return utf16_string;
 }

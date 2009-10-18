@@ -1,19 +1,16 @@
+/*
+ * main.cpp
+ * Main program file. Starts bot and manages bot restarting caused by server
+ * problems.
+ */
+
 #include "bot.h"
+
+#include <locale>
 
 int main()
 {
-    setlocale(LC_ALL, "Russian"); // for console messages localization
+    setlocale(LC_ALL, ""); // for console messages localization
 
-    try
-    {
-        for(;;)
-            Bot b("config.ini");
-    }
-    catch(int &i)
-    {
-        if(i != Bot::exception_exit)
-            throw i;
-        else
-            return 0;
-    }
+    ChtonianBot b("config.ini");
 }

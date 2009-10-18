@@ -5,6 +5,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 
+#include <algorithm>
 #include <clocale>
 #include <cstdio>
 #include <ctime>
@@ -62,7 +63,10 @@ void Bot::confLog(const string &conf_name, const string &nick, string message) c
     strftime(filename_buff, filename_size, filename_format.c_str(), ptm);
     strftime(timestamp_buff, timestamp_size, timestamp_format, ptm);
 
-    // TODO: use string here!
+    string filename_string = filename_buff;
+    string timestamp_string = timestamp_buff;
+    delete[] filename_buff;
+    delete[] timestamp_buff;
     
     path log_directory(system_complete(path("logs")));
     if(!exists(log_directory))
@@ -74,12 +78,10 @@ void Bot::confLog(const string &conf_name, const string &nick, string message) c
     if(!is_directory(log_directory))
     {
         log(utf8(L"\"") + log_directory.string() + utf8(L"\" не является каталогом, запись логов невозможна."));
-        delete[] filename_buff;
-        delete[] timestamp_buff;
         return;
     }
 
-    path filename(log_directory / filename_buff);
+    path filename(log_directory / filename_string);
 
     ofstream log_file(filename.string().c_str(), ios_base::app | ios_base::binary);
     if(!exists(filename) || is_empty(filename))
@@ -92,10 +94,7 @@ void Bot::confLog(const string &conf_name, const string &nick, string message) c
         message[found] = '\n';
     }
 
-    log_file << timestamp_buff << utf8(L" <") << nick << utf8(L"> ") << message << "\r\n";
-
-    delete[] filename_buff;
-    delete[] timestamp_buff;
+    log_file << timestamp_string << utf8(L" <") << nick << utf8(L"> ") << message << "\r\n";
 }
 
 string Bot::logSearch(const string &mask, const string &conf_name, int index) const
@@ -115,9 +114,7 @@ string Bot::logSearch(const string &mask, const string &conf_name, int index) co
             if(!is_directory(logfile_itr->status()) && (conf_name == "" || logfile_itr->path().filename().find(conf_name) == 0))
             {
                 ifstream logfile(logfile_itr->path().string().c_str(), ios_base::in | ios::binary);
-                
-                // ignore UTF-8 BOM
-                logfile.ignore(3);
+                logfile.ignore(3); // ignore UTF-8 BOM
 
                 string line, message;
                 while(!getline(logfile, line).eof())
@@ -173,9 +170,28 @@ public:
     }
 };
 
-string Bot::logStat(const string &conf_name, const string &nick) const
+typedef pair<string, Participant> String_Participant;
+
+class Transformer
 {
-    static const regex msg_expr("^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}\\] <(.*?)> (.*)$");
+public:
+    static int i;
+    vector<String_Participant> vec;
+
+    void operator()(map<string, Participant>::const_reference p)
+    {
+        vec.push_back(String_Participant(p.first, p.second));
+    }
+};
+
+static bool compare(const String_Participant &a, const String_Participant &b)
+{
+    return a.second.message_count < b.second.message_count;
+}
+
+/*string Bot::logStat(const string &conf_name, const string &nick) const
+{
+    /*static const regex msg_expr("^\\[[0-9]{2}:[0-9]{2}:[0-9]{2}\\] <(.*?)> (.*)$");
     static const wregex words_expr(L"\\<(.*?)\\>");
 
     map<string, Participant> stats;
@@ -205,22 +221,51 @@ string Bot::logStat(const string &conf_name, const string &nick) const
             smatch msg_match;
             if(regex_match(line, msg_match, msg_expr))
             {
-                string nick = msg_match[1].str();
-                wstring wmessage = deUtf8(msg_match[2].str());
-
-                stats[nick].message_count++;
-
-                // parse message
-                wsmatch words_match;
-                while(regex_search(wmessage, words_match, words_expr))
+                string log_nick = msg_match[1].str();
+                if(nick.empty() || nick == log_nick)
                 {
-#pragma error("iterators need here")
-                    wstring word = words_match[1].str();
-                    stats[nick].word_count++;
+                    wstring wmessage = deUtf8(msg_match[2].str());
+
+                    stats[log_nick].message_count++;
+
+                    // parse message
+                    wsmatch words_match;
+                    wstring::const_iterator start = wmessage.begin();
+                    wstring::const_iterator end = wmessage.end();
+                    while(regex_search(start, end, words_match, words_expr))
+                    {
+                        wstring word = words_match[1].str();
+                        stats[log_nick].word_count++;
+                        start += word.length();
+                    }
                 }
             }
         }
 
         in_file.close();
     }
-}
+    
+    ostringstream result;
+    if(!nick.empty())
+    {
+        result << nick << " : " << stats[nick].message_count << " : " << stats[nick].word_count;
+    }
+    else
+    {
+        Transformer transformer;
+        transformer.i = 0;
+        transformer.vec.clear();
+        for_each(stats.begin(), stats.end(), transformer);
+        partial_sort(transformer.vec.begin(), transformer.vec.begin() + min<int>(9, transformer.vec.size()),
+            transformer.vec.end(), compare);
+
+        vector<String_Participant>::iterator it = transformer.vec.begin();
+        for(int i = 0; i < 10 && it != transformer.vec.end(); ++it, i++)
+        {
+            result << i << " : " << it->first << " : " << it->second.message_count << " : " << it->second.word_count
+                << '\n';
+        }
+    }
+    return result.str();*/
+  /*return "";
+}*/

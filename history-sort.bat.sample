@@ -1,1 +1,1 @@
-Release\history-import.exe --to="/path/cthulhu-bot/logs" --sort
+Release\history-import.exe --to="C:\path\cthulhu-bot\logs" --sort
