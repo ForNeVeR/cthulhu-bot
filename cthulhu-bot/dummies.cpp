@@ -13,3 +13,23 @@ void ChtonianBot::handleMUCParticipantPresence(MUCRoom *room,
 {
     
 }
+
+void ChtonianBot::onDisconnect(gloox::ConnectionError e)
+{
+
+}
+
+void ChtonianBot::onResourceBindError(gloox::ResourceBindError error)
+{
+
+}
+
+void ChtonianBot::onSessionCreateError(gloox::SessionCreateError error)
+{
+    
+}
+
+bool ChtonianBot::onTLSConnect(const gloox::CertInfo &info)
+{
+    return true;
+}

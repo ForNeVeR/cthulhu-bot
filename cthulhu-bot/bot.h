@@ -5,7 +5,7 @@
 #ifndef BOT_H
 #define BOT_H
 
-#include <ctime>
+//#include <ctime>
 #include <string>
 #include <map>
 #include <memory>
@@ -24,7 +24,7 @@
 
 class ChtonianBot : public gloox::MessageHandler,
     public gloox::SubscriptionHandler, public gloox::IqHandler,
-    public gloox::MUCRoomHandler/*, public gloox::ConnectionListener*/
+    public gloox::MUCRoomHandler, public gloox::ConnectionListener
 {
 private:
     // Common resources
@@ -44,10 +44,12 @@ private:
     //std::string logStat(const std::string &conf_name, const std::string &nick = "") const;
 
     // Working with conferences
+    void enterRoom(const std::string &name);
+    gloox::MUCRoom *getRoom(const std::string &name) const;
+    std::string finishRoomName(const std::string &name) const;
     void confLog(const std::string &conf_name, const std::string &nick,
         std::string message) const;
-    gloox::MUCRoom *getRoom(const std::string &name);
-
+    
     // Commands
     std::vector<std::string> parseCommand(const std::string &str) const;
     std::string executeCommand(const std::string &command,
@@ -87,11 +89,11 @@ public:
     virtual void handleMUCItems(gloox::MUCRoom *room,
         const gloox::StringMap &items);
 
-    /*virtual void onConnect();
+    virtual void onConnect();
     virtual void onDisconnect(gloox::ConnectionError e);
     virtual void onResourceBindError(gloox::ResourceBindError error);
     virtual void onSessionCreateError(gloox::SessionCreateError error);
-    virtual bool onTLSConnect(const gloox::CertInfo &info);*/
+    virtual bool onTLSConnect(const gloox::CertInfo &info);
 };
 
 #endif // BOT_H

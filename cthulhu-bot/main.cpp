@@ -3,7 +3,6 @@
  * Main program file. Starts bot and manages bot restarting caused by server
  * problems.
  */
-
 #include "bot.h"
 
 #include <locale>

@@ -28,7 +28,7 @@ void ChtonianBot::handleMUCMessage(MUCRoom *room, const string &nick,
     {
         confLog(room->name() + UTF8(L"@") + room->service(), nick, message);
 
-        response = executeCommand(message, 0);
+        string response = executeCommand(message, 0);
         if(response != "")
         {
             log(utf8(L"<") + room->name() + UTF8(L"@") + room->service() +
@@ -82,18 +82,7 @@ string ChtonianBot::executeCommand(const string &command,
             if(!getRoom(arguments[1]))
             {
                 string room_name = arguments[1];
-                if(room_name.find_first_of('@') == string::npos)
-                {
-                    room_name += "@";
-                    room_name += config["muc.default_service"].as<string>();
-                }
-
-                log(utf8(L"¬хожу в комнату ") + room_name + utf8(L" по запросу ")
-                    + source.full() + utf8(L"."));
-                JID nick(room_name + utf8(L"/") + config["info.nick"].as<string>());
-
-                rooms.push_back(new MUCRoom(j.get(), nick, this));
-                rooms.back()->join();
+                enterRoom(room_name);
             }
             else
                 log(utf8(L"”же нахожусь в данной комнате."));

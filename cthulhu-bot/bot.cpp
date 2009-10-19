@@ -1,10 +1,7 @@
 /*
  * bot.cpp
- * This file implements main bot methods such as connection handling, config
- * properties and access level workaround.
- * Various "dummy" methods also goes here.
+ * This file implements general methods: connection, config and room handling.
  */
-
 #include "bot.h"
 
 #include <fstream>
@@ -25,7 +22,7 @@ ChtonianBot::ChtonianBot(const string &config_name)
 
         ("master.jid", po::value<vector<string> >())
 
-        ("info.nick", po::value<string>()->default_value(utf8(L"cthulhu-bot")))
+        ("info.nick", po::value<string>()->default_value(UTF8(L"cthulhu-bot")))
 
         ("muc.default_service", po::value<string>()->default_value(""))
 
@@ -38,15 +35,16 @@ ChtonianBot::ChtonianBot(const string &config_name)
     j = auto_ptr<Client>(new Client(jid,
         config["login.password"].as<string>()));
 
-    j->disco()->setVersion("cthulhu-bot", "~0.0~");
+    j->disco()->setVersion("cthulhu-bot",
+        "0.0 compiled at " __DATE__ " " __TIME__);
 
     j->registerMessageHandler(this);
     j->registerSubscriptionHandler(this);
     j->registerConnectionListener(this);
     j->setPresence(PresenceAvailable);
 
-    log(utf8(L"Захожу на сервер (") + config["login.jid"].as<string>()
-        + utf8(L")..."));
+    log(UTF8(L"Entering server (") + config["login.jid"].as<string>()
+        + UTF8(L")..."));
 
     j->connect();
 }
@@ -63,35 +61,52 @@ int ChtonianBot::getAccessLevel(string source)
 
 void ChtonianBot::onConnect()
 {
-    // TODO: !!! FULLY REWORK THIS!
     if(config.count("autojoin.room"))
     {
-        vector<string> autorooms = config["autojoin.room"].as<vector<string> >();
-        for(vector<string>::const_iterator i = autorooms.begin(); i != autorooms.end(); i++)
+        vector<string> autorooms
+            = config["autojoin.room"].as<vector<string> >();
+        for(vector<string>::const_iterator room_name = autorooms.begin();
+            room_name != autorooms.end(); room_name++)
         {
-            executeCommand(string("!enter ") + *i, config["master.jid"].as<vector<string> >()[0]);
+            enterRoom(*room_name);
         }
     }
 }
 
-// Returns room from array of NULL if room doesn't connected
-// Also uses ini default_server feature
-gloox::MUCRoom *ChtonianBot::getRoom(const std::string &name)
+void ChtonianBot::enterRoom(const string &name)
 {
-    string room_name = name;
-    if(room_name.find_first_of('@') == string::npos)
-    {
-        room_name += "@";
-        room_name += config["muc.default_service"].as<string>();
-    }
+    string room_name = finishRoomName(name);
 
-    for(int i = 0; i < rooms.size(); i++)
+    log(UTF8(L"Entering room ") + room_name + UTF8(L"."));
+
+    JID nick(room_name + UTF8(L"/") + config["info.nick"].as<string>());
+    rooms.push_back(new MUCRoom(j.get(), nick, this));
+    rooms.back()->join();
+}
+
+// Returns room pointer or NULL if room doesn't connected.
+gloox::MUCRoom *ChtonianBot::getRoom(const std::string &name) const
+{
+    string room_name = finishRoomName(name);
+    
+    for(vector<MUCRoom *>::const_iterator room = rooms.begin();
+        room != rooms.end(); room++)
     {
-        if(rooms[i]->name() + "@" + rooms[i]->service() == room_name)
+        if((*room)->name() + UTF8(L"@") + (*room)->service() == room_name)
         {
-            return rooms[i];
+            return *room;
         }
     }
     
     return NULL;
+}
+
+string ChtonianBot::finishRoomName(const string &name) const
+{
+    if(name.find_first_of(UTF8(L"@")) == string::npos)
+    {
+        return name + UTF8(L"@") + config["muc.default_service"].as<string>();
+    }
+
+    return name;
 }

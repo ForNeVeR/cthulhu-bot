@@ -2,7 +2,6 @@
  * unicode.h
  * Header file for UTF8 text conversion.
  */
-
 #ifndef UNICODE_H
 #define UNICODE_H
 
