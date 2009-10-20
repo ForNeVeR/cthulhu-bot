@@ -10,9 +10,10 @@ using namespace std;
 
 void ChtonianBot::handleMessage(Stanza *stanza, MessageSession *session)
 {
-    log(utf8(L"<") + stanza->from().full() + utf8(L"> ") + stanza->body());
+    log(UTF8(L"<") + stanza->from().full() + UTF8(L"> ") + stanza->body());
     
-    string response = executeCommand(stanza->body(), );
+    string response = executeCommand(stanza->body(),
+        getAccessLevel(stanza->from().bare()));
     if(response != "")
     {
         Stanza *s = Stanza::createMessageStanza(stanza->from(), response);
@@ -26,22 +27,23 @@ void ChtonianBot::handleMUCMessage(MUCRoom *room, const string &nick,
 {
     if(!history) // We are ignoring historical messages.
     {
-        confLog(room->name() + UTF8(L"@") + room->service(), nick, message);
+        string room_jid = room->name() + UTF8(L"@") + room->service();
+
+        confLog(room_jid, nick, message);
 
         string response = executeCommand(message, 0);
         if(response != "")
         {
-            log(utf8(L"<") + room->name() + UTF8(L"@") + room->service() +
-                UTF8(L"/") + nick + utf8(L"> ") + message);
+            log(UTF8(L"<") + room_jid + UTF8(L"/") + nick + UTF8(L"> ")
+                + message);
             
             if(!privateMessage)
                 room->send(response);
             else
             {
                 // TODO: Check this.
-                Stanza *s = Stanza::createMessageStanza(JID(room->name
-                    + UTF8(L"@") + room->service() + UTF8(L"/") + nick),
-                    response);
+                Stanza *s = Stanza::createMessageStanza(JID(room_jid
+                    + UTF8(L"/") + nick), response);
                 j->send(s);
             }
         }
@@ -63,19 +65,23 @@ vector<string> ChtonianBot::parseCommand(const std::string &str) const
 
 // Main command method. Tries to execute command and returns some response.
 string ChtonianBot::executeCommand(const string &command,
-    const int accessLevel)
+    const int accessLevel, const bool fromMUC)
 {
     vector<string> arguments = parseCommand(command);
 
-    vector<string> masters = config["master.jid"].as<vector<string> >();
-    if(!from_muc && find(masters.begin(), masters.end(), source.bare()) != masters.end() && arguments.size() > 0)
+    if(arguments.size() == 0)
+        return "";
+
+    // Admin commands
+    if(accessLevel >= 100)
     {
         if(arguments[0] == "!exit")
         {
-            log(utf8(L"Выхожу по запросу ") + source.full() + utf8(L"."));
+            log(UTF8(L"Leaving..."));
             j->disconnect();
-            
-            throw exception_exit;
+
+            // TODO: Better throw exception here?
+            return "";
         }
         else if(arguments[0] == "!enter" && arguments.size() > 1)
         {
@@ -85,11 +91,11 @@ string ChtonianBot::executeCommand(const string &command,
                 enterRoom(room_name);
             }
             else
-                log(utf8(L"Уже нахожусь в данной комнате."));
+                log(UTF8(L"Already in this room."));
             
-            return true;
+            return UTF8(L"Entering ") + arguments[0] + UTF8(L".");
         }
-        else if(arguments[0] == "!say" && arguments.size() > 1)
+        /*else if(arguments[0] == "!say" && arguments.size() > 1)
         {
             MUCRoom *room = getRoom(arguments[1]);
             if(room)
@@ -101,8 +107,8 @@ string ChtonianBot::executeCommand(const string &command,
                 log(utf8(L"Невозможно найти требуемую комнату в списке подключенных."));
 
             return true;
-        }
-        else if(arguments[0] == "!ban" && arguments.size() > 2)
+        }*/
+        /*else if(arguments[0] == "!ban" && arguments.size() > 2)
         {
             MUCRoom *room = getRoom(arguments[1]);
             if(room)
@@ -113,10 +119,10 @@ string ChtonianBot::executeCommand(const string &command,
                 log(utf8(L"Невозможно найти требуемую комнату в списке подключенных."));
 
             return true;
-        }
+        }*/
     }
 
-    if(arguments.size() > 0 && arguments[0] == "!ping")
+    /*if(arguments.size() > 0 && arguments[0] == "!ping")
     {
         string id = j->getID();
         Stanza *parent = Stanza::createIqStanza(source, id, StanzaIqGet);
@@ -232,9 +238,9 @@ string ChtonianBot::executeCommand(const string &command,
         j->send(s);
 
         return true;
-    }
+    }*/
 
-    return false;
+    return "";
 }
 
 bool ChtonianBot::handleIqID(gloox::Stanza *stanza, int context)
@@ -297,20 +303,20 @@ bool ChtonianBot::handleIqID(gloox::Stanza *stanza, int context)
 
 void ChtonianBot::handleSubscription(gloox::Stanza *stanza)
 {
-    if (getAccessLevel(stanza->from().bare()) == 100)
+    if (getAccessLevel(stanza->from().bare()) >= 100)
     {
         Stanza *s = Stanza::createSubscriptionStanza(stanza->from(), "",
             StanzaS10nSubscribed);
         j->send(s);
-        log(utf8(L"Получен запрос авторизации от ") + stanza->from().full()
-            + utf8(L". Попытка принять..."));
+        log(UTF8(L"Получен запрос авторизации от ") + stanza->from().full()
+            + UTF8(L". Попытка принять..."));
         s = Stanza::createMessageStanza(stanza->from(),
-            utf8(L"Ваша авторизация принята, командир."));
+            UTF8(L"Ваша авторизация принята, командир."));
         j->send(s);
     }
     else
     {
-        log(utf8(L"Получен запрос авторизации от ") + stanza->from().full()
-            + utf8(". Игнорирую."));
+        log(UTF8(L"Получен запрос авторизации от ") + stanza->from().full()
+            + UTF8(L". Игнорирую."));
     }
 }
