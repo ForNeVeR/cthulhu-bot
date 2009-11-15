@@ -22,7 +22,7 @@ void ChtonianBot::log(string message)
     time_t raw_time = time(NULL);
     tm *ptm = gmtime(&raw_time);
 
-    wcout << deUtf8(message) << endl;
+    wcout << deUTF8(message) << endl;
 
     const char format[] = "[%Y.%m.%d %H:%M:%S]";
     // format time as "[2009.06.14 14:34:02]" - 21 characters + 1 for terminating null == 22
@@ -71,20 +71,20 @@ void ChtonianBot::confLog(const string &conf_name, const string &nick, string me
     path log_directory(system_complete(path("logs")));
     if(!exists(log_directory))
     {
-        log(utf8(L" аталог дл€ логов не найден. —оздаю каталог \"") + log_directory.string() + utf8(L"\"."));
+        log(UTF8(L" аталог дл€ логов не найден. —оздаю каталог \"") + log_directory.string() + UTF8(L"\"."));
         create_directory(log_directory);
     }
 
     if(!is_directory(log_directory))
     {
-        log(utf8(L"\"") + log_directory.string() + utf8(L"\" не €вл€етс€ каталогом, запись логов невозможна."));
+        log(UTF8(L"\"") + log_directory.string() + UTF8(L"\" не €вл€етс€ каталогом, запись логов невозможна."));
         return;
     }
 
     path filename(log_directory / filename_string);
 
     ofstream log_file(filename.string().c_str(), ios_base::app | ios_base::binary);
-    if(!exists(filename) || is_empty(filename))
+	if(!exists(filename) || boost::filesystem::is_empty(filename))
         log_file << "\xEF\xBB\xBF";
 
     // log control TODO: CHECK
@@ -94,7 +94,7 @@ void ChtonianBot::confLog(const string &conf_name, const string &nick, string me
         message[found] = '\n';
     }
 
-    log_file << timestamp_string << utf8(L" <") << nick << utf8(L"> ") << message << "\r\n";
+    log_file << timestamp_string << UTF8(L" <") << nick << UTF8(L"> ") << message << "\r\n";
 }
 
 /*string ChtonianBot::logSearch(const string &mask, const string &conf_name, int index) const

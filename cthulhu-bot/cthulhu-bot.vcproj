@@ -29,8 +29,8 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				Description="Performing Custom Build Step..."
-				CommandLine="echo Copying $(ConfigurationName) build of gloox.dll library into output directory...&#x0D;&#x0A;copy /y &quot;..\..\gloox\$(ConfigurationName)\gloox.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
-				AdditionalDependencies="&quot;..\..\gloox\$(ConfigurationName)\gloox.dll&quot;"
+				CommandLine="echo Copying $(ConfigurationName) build of gloox.dll library into output directory...&#x0D;&#x0A;copy /y &quot;..\..\Lib\gloox\$(ConfigurationName)\gloox.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+				AdditionalDependencies="&quot;..\..\Lib\gloox\$(ConfigurationName)\gloox.dll&quot;"
 				Outputs="&quot;$(OutDir)\gloox.dll&quot;"
 			/>
 			<Tool
@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\gloox\src;..\..\boost_1_40_0"
+				AdditionalIncludeDirectories="..\..\Lib\gloox\src;..\..\Lib\boost_1_40_0"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;GLOOX_IMPORTS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -65,9 +65,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\gloox\Release\gloox.lib"
+				AdditionalDependencies="..\..\Lib\gloox\Debug\gloox.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\boost_1_39_0\stage\lib"
+				AdditionalLibraryDirectories="..\..\Lib\boost_1_40_0\stage\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -108,8 +108,8 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				Description="Performing Custom Build Step..."
-				CommandLine="echo Copying $(ConfigurationName) build of gloox.dll library into output directory...&#x0D;&#x0A;copy /y &quot;..\..\gloox\$(ConfigurationName)\gloox.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
-				AdditionalDependencies="&quot;..\..\gloox\$(ConfigurationName)\gloox.dll&quot;"
+				CommandLine="echo Copying $(ConfigurationName) build of gloox.dll library into output directory...&#x0D;&#x0A;copy /y &quot;..\..\Lib\gloox\$(ConfigurationName)\gloox.dll&quot; &quot;$(OutDir)&quot;&#x0D;&#x0A;"
+				AdditionalDependencies="&quot;..\..\Lib\gloox\$(ConfigurationName)\gloox.dll&quot;"
 				Outputs="&quot;$(OutDir)\gloox.dll&quot;"
 			/>
 			<Tool
@@ -125,7 +125,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\..\gloox\src;..\..\boost_1_40_0"
+				AdditionalIncludeDirectories="..\..\Lib\gloox\src;..\..\Lib\boost_1_40_0"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;GLOOX_IMPORTS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -144,9 +144,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="..\..\gloox\Release\gloox.lib"
+				AdditionalDependencies="..\..\Lib\gloox\Release\gloox.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="..\..\boost_1_39_0\stage\lib"
+				AdditionalLibraryDirectories="..\..\Lib\boost_1_40_0\stage\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

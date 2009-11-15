@@ -7,11 +7,50 @@
 #include "bot.h"
 
 using namespace gloox;
+using namespace std;
+
+bool ChtonianBot::handleIq(Stanza *stanza)
+{
+	return false;
+}
 
 void ChtonianBot::handleMUCParticipantPresence(MUCRoom *room,
     const MUCRoomParticipant participant, Presence presence)
 {
     
+}
+
+bool ChtonianBot::handleMUCRoomCreation(MUCRoom *room)
+{
+	return false;
+}
+
+void ChtonianBot::handleMUCSubject(MUCRoom *room, const string &nick, 
+    const string &subject)
+{
+
+}
+
+void ChtonianBot::handleMUCInviteDecline(MUCRoom *room, const JID &invitee,
+    const string &reason)
+{
+
+}
+
+void ChtonianBot::handleMUCError(MUCRoom *room, StanzaError error)
+{
+
+}
+
+void ChtonianBot::handleMUCInfo(MUCRoom *room, int features,
+    const string &name, const gloox::DataForm *infoForm)
+{
+
+}
+
+void ChtonianBot::handleMUCItems(MUCRoom *room, const StringMap &items)
+{
+
 }
 
 void ChtonianBot::onDisconnect(gloox::ConnectionError e)
