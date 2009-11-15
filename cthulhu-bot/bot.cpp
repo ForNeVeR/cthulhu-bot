@@ -110,3 +110,26 @@ string ChtonianBot::finishRoomName(const string &name) const
 
     return name;
 }
+
+void ChtonianBot::handleSubscription(gloox::Stanza *stanza)
+{
+    if (getAccessLevel(stanza->from().bare()) >= 100)
+    {
+        Stanza *s = Stanza::createSubscriptionStanza(stanza->from(), "",
+            StanzaS10nSubscribed);
+        j->send(s);
+        log(UTF8(L"Trying to accept subscription request from ")
+            + stanza->from().full() + UTF8(L"."));
+        s = Stanza::createMessageStanza(stanza->from(),
+            UTF8(L"Welcome, commander."));
+        j->send(s);
+    }
+    else
+    {
+        Stanza *s = Stanza::createSubscriptionStanza(stanza->from(), "",
+            StanzaS10nUnsubscribed);
+        j->send(s);
+        log(UTF8(L"Subscription request from ") + stanza->from().full()
+            + UTF8(L" was rejected."));
+    }
+}

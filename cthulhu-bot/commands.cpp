@@ -50,7 +50,10 @@ void ChtonianBot::handleMUCMessage(MUCRoom *room, const string &nick,
     }
 }
 
-// This method parses incoming string into vector containing words.
+/*
+ * This method parses incoming string into vector containing command name and
+ * its arguments.
+ */
 vector<string> ChtonianBot::parseCommand(const std::string &str) const
 {
     istringstream command(str);
@@ -61,6 +64,7 @@ vector<string> ChtonianBot::parseCommand(const std::string &str) const
         result.push_back(buff);
     }
     return result;
+    // TODO: Add some quotes support.
 }
 
 // Main command method. Tries to execute command and returns some response.
@@ -72,10 +76,17 @@ string ChtonianBot::executeCommand(const string &command,
     if(arguments.size() == 0)
         return "";
 
+    #define COMMAND_IS(name, arguments_count) \
+        arguments[0] == name && arguments.size() == arguments_count + 1
+
     // Admin commands
     if(accessLevel >= 100)
     {
-        if(arguments[0] == "!exit")
+        if(COMMAND_IS("!help", 0))
+        {
+            return UTF8(L"Avaliable commands: !help, !exit, !enter <arg>.");
+        }
+        else if(COMMAND_IS("!exit", 0))
         {
             log(UTF8(L"Leaving..."));
             j->disconnect();
@@ -83,7 +94,7 @@ string ChtonianBot::executeCommand(const string &command,
             // TODO: Better throw exception here?
             return "";
         }
-        else if(arguments[0] == "!enter" && arguments.size() > 1)
+        else if(COMMAND_IS("!enter", 1))
         {
             if(!getRoom(arguments[1]))
             {
@@ -120,6 +131,12 @@ string ChtonianBot::executeCommand(const string &command,
 
             return true;
         }*/
+    }
+
+    // Not-admin commands
+    if(COMMAND_IS("!help", 0))
+    {
+        return "Avaliable commands: !help.";
     }
 
     /*if(arguments.size() > 0 && arguments[0] == "!ping")
@@ -299,24 +316,4 @@ bool ChtonianBot::handleIqID(gloox::Stanza *stanza, int context)
     }*/
 
     return false;
-}
-
-void ChtonianBot::handleSubscription(gloox::Stanza *stanza)
-{
-    if (getAccessLevel(stanza->from().bare()) >= 100)
-    {
-        Stanza *s = Stanza::createSubscriptionStanza(stanza->from(), "",
-            StanzaS10nSubscribed);
-        j->send(s);
-        log(UTF8(L"Получен запрос авторизации от ") + stanza->from().full()
-            + UTF8(L". Попытка принять..."));
-        s = Stanza::createMessageStanza(stanza->from(),
-            UTF8(L"Ваша авторизация принята, командир."));
-        j->send(s);
-    }
-    else
-    {
-        log(UTF8(L"Получен запрос авторизации от ") + stanza->from().full()
-            + UTF8(L". Игнорирую."));
-    }
 }
