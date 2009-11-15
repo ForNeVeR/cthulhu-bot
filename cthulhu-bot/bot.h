@@ -51,7 +51,8 @@ private:
         std::string message) const;
     
     // Commands
-    std::vector<std::string> parseCommand(const std::string &str) const;
+    static bool parseCommand(const std::string &str,
+        std::vector<std::string> &result);
     std::string executeCommand(const std::string &command,
         const int accessLevel, const bool fromMUC = false);
 

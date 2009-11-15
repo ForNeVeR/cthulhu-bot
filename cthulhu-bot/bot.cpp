@@ -51,12 +51,12 @@ ChtonianBot::ChtonianBot(const string &config_name)
 
 int ChtonianBot::getAccessLevel(string source)
 {
-    // TODO: Fixes for room members and others
-    vector<string> masters = config["master.jid"].as<vector<string> >();
+    static vector<string> masters = config["master.jid"].as<vector<string> >();
     if(find(masters.begin(), masters.end(), source) != masters.end())
         return 100;
     else
         return 0;
+    // TODO: Add access levels for room members and others
 }
 
 void ChtonianBot::onConnect()
@@ -77,7 +77,7 @@ void ChtonianBot::enterRoom(const string &name)
 {
     string room_name = finishRoomName(name);
 
-    log(UTF8(L"Entering room ") + room_name + UTF8(L"."));
+    log(UTF8(L"Entering conference ") + room_name + UTF8(L"."));
 
     JID nick(room_name + UTF8(L"/") + config["info.nick"].as<string>());
     rooms.push_back(new MUCRoom(j.get(), nick, this));
