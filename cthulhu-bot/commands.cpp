@@ -84,7 +84,7 @@ string ChtonianBot::executeCommand(const string &command,
     {
         if(COMMAND_IS("!help", 0))
         {
-            return UTF8(L"Avaliable commands: !help, !exit, !enter <arg>.");
+            return UTF8(L"Avaliable commands: !help, !exit, !enter <room>.");
         }
         else if(COMMAND_IS("!exit", 0))
         {
@@ -102,9 +102,10 @@ string ChtonianBot::executeCommand(const string &command,
                 enterRoom(room_name);
             }
             else
-                log(UTF8(L"Already in this room."));
+                log(UTF8(L"Already in this conference."));
             
-            return UTF8(L"Entering ") + arguments[0] + UTF8(L".");
+            return UTF8(L"Entering conference ") + finishRoomName(arguments[1])
+                + UTF8(L".");
         }
         /*else if(arguments[0] == "!say" && arguments.size() > 1)
         {
@@ -136,7 +137,7 @@ string ChtonianBot::executeCommand(const string &command,
     // Not-admin commands
     if(COMMAND_IS("!help", 0))
     {
-        return "Avaliable commands: !help.";
+        return UTF8(L"Avaliable commands: !help.");
     }
 
     /*if(arguments.size() > 0 && arguments[0] == "!ping")
