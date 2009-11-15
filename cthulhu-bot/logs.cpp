@@ -17,7 +17,7 @@ using namespace boost;
 using namespace boost::filesystem;
 using namespace std;
 
-void Bot::log(string message)
+void ChtonianBot::log(string message)
 {
     time_t raw_time = time(NULL);
     tm *ptm = gmtime(&raw_time);
@@ -46,7 +46,7 @@ void Bot::log(string message)
     delete[] buff;
 }
 
-void Bot::confLog(const string &conf_name, const string &nick, string message) const
+void ChtonianBot::confLog(const string &conf_name, const string &nick, string message) const
 {
     // prepare timestamp
     time_t raw_time = time(NULL);
@@ -97,7 +97,7 @@ void Bot::confLog(const string &conf_name, const string &nick, string message) c
     log_file << timestamp_string << utf8(L" <") << nick << utf8(L"> ") << message << "\r\n";
 }
 
-string Bot::logSearch(const string &mask, const string &conf_name, int index) const
+/*string ChtonianBot::logSearch(const string &mask, const string &conf_name, int index) const
 {
     srand(time(NULL));
 

@@ -25,7 +25,7 @@ void ChtonianBot::handleMUCMessage(MUCRoom *room, const string &nick,
     const string &message, bool history, const string &when,
     bool privateMessage)
 {
-    if(!history) // We are ignoring historical messages.
+    if(!history) // We ignore historical messages.
     {
         string room_jid = room->name() + UTF8(L"@") + room->service();
 
