@@ -20,6 +20,7 @@
 #include <mucroomhandler.h>
 #include <subscriptionhandler.h>
 
+#include "command.h"
 #include "unicode.h"
 
 class ChtonianBot : public gloox::MessageHandler,
@@ -32,6 +33,7 @@ private:
     std::auto_ptr<gloox::Client> j; // Why "j"? But why not?
     std::vector<gloox::MUCRoom *> rooms;
     boost::program_options::variables_map config;
+    std::vector<Command> commands;
 
     //const static int PING_CONTEXT = 0;
 
@@ -55,7 +57,22 @@ private:
         std::vector<std::string> &result);
     std::string executeCommand(const std::string &command,
         const int accessLevel, const bool fromMUC = false);
+    void registerCommand(const Command &newCommand);
 
+    // Basic commands stuff
+    void registerAllBasicCommands();
+    friend std::string enter_cmd(const std::vector<std::string> &args,
+        ChtonianBot &bot);
+    friend std::string exit_cmd(const std::vector<std::string> &args,
+        ChtonianBot &bot);
+    friend std::string help_cmd(const std::vector<std::string> &args,
+        ChtonianBot &bot);
+    friend std::string nick_cmd(const std::vector<std::string> &args,
+        ChtonianBot &bot);
+    friend std::string say_cmd(const std::vector<std::string> &args,
+        ChtonianBot &bot);
+
+    // History
     friend void history_add(const std::tm &utc_datetime,
         const std::string &conf_name, const std::string &nick,
         std::string message, bool ignore_dups);

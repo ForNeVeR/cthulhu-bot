@@ -185,7 +185,15 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath=".\basic_commands.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\bot.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\command.cpp"
 				>
 			</File>
 			<File
@@ -212,6 +220,10 @@
 			>
 			<File
 				RelativePath=".\bot.h"
+				>
+			</File>
+			<File
+				RelativePath=".\command.h"
 				>
 			</File>
 		</Filter>

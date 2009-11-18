@@ -43,6 +43,8 @@ ChtonianBot::ChtonianBot(const string &config_name)
     j->registerConnectionListener(this);
     j->setPresence(PresenceAvailable);
 
+    registerAllBasicCommands();
+
     log(UTF8(L"Entering server (") + config["login.jid"].as<string>()
         + UTF8(L")..."));
 

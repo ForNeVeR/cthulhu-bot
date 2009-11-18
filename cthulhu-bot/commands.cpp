@@ -80,7 +80,7 @@ bool ChtonianBot::parseCommand(const std::string &str,
     if(regex_match(cmd, arg_match, command_name))
     {
         wstring cmd_name = arg_match[1].str();
-        cmd.erase(cmd_name.length());
+        cmd.erase(0, cmd_name.length());
         result.push_back(UTF8(cmd_name.c_str()));
 
         while(!cmd.empty())
@@ -90,7 +90,7 @@ bool ChtonianBot::parseCommand(const std::string &str,
             wsmatch trimmed_str;
             if(regex_match(cmd, trimmed_str, trimmed))
             {
-                cmd.erase(trimmed_str[1].length());
+                cmd.erase(0, trimmed_str[1].length());
             }
 
             wstring arg;
@@ -113,7 +113,7 @@ bool ChtonianBot::parseCommand(const std::string &str,
                 arg_size = arg.length();
             }
             
-            cmd.erase(arg_size);
+            cmd.erase(0, arg_size);
             result.push_back(UTF8(arg.c_str()));
         }
 
@@ -130,193 +130,28 @@ string ChtonianBot::executeCommand(const string &command,
     vector<string> arguments;
     if(parseCommand(command, arguments))
     {
-        #define COMMAND_IS(name, arguments_count) \
-            arguments[0] == name && arguments.size() == arguments_count + 1
-
-        // Admin commands
-        if(accessLevel >= 100)
+        for(vector<Command>::iterator cmd = commands.begin();
+            cmd != commands.end(); ++cmd)        
         {
-            if(COMMAND_IS("!help", 0))
+            if(arguments[0] == cmd->name
+                && arguments.size() == cmd->argsCount + 1
+                && accessLevel >= cmd->accessLevel)
             {
-                return UTF8(L"Avaliable commands: !enter <conference>, !exit, "
-                    L"!help, !say <conference> \"message\".");
+                return cmd->execute(arguments, *this);
             }
-            else if(COMMAND_IS("!exit", 0))
-            {
-                log(UTF8(L"Leaving..."));
-                j->disconnect();
-
-                // TODO: Better throw exception here?
-                return "";
-            }
-            else if(COMMAND_IS("!enter", 1))
-            {
-                if(!getRoom(arguments[1]))
-                {
-                    string room_name = arguments[1];
-                    enterRoom(room_name);
-                }
-                else
-                    log(UTF8(L"Already in this conference."));
-                
-                return UTF8(L"Entering conference ")
-                    + finishRoomName(arguments[1]) + UTF8(L".");
-            }
-            else if(COMMAND_IS("!say", 2))
-            {
-                MUCRoom *room = getRoom(arguments[1]);
-                if(room)
-                {
-                    string message = arguments[2];
-                    room->send(message);
-                    log(UTF8(L"-> ") + room->name() + UTF8(L"@")
-                        + room->service() + UTF8(L": ") + message);
-                    return UTF8(L"Message has been sent.");
-                }
-                else
-                    return UTF8(L"Cannot find this conference in list of "
-                        L"connected conferences.");
-            }
-            /*else if(arguments[0] == "!ban" && arguments.size() > 2)
-            {
-                MUCRoom *room = getRoom(arguments[1]);
-                if(room)
-                {
-                  room->ban(arguments[2], "Banned by bot owner.");
-                }
-                else
-                    log(utf8(L"Невозможно найти требуемую комнату в списке подключенных."));
-
-                return true;
-            }*/
         }
-
-        // Not-admin commands
-        if(COMMAND_IS("!help", 0))
-        {
-            return UTF8(L"Avaliable commands: !help.");
-        }
-
-        /*if(arguments.size() > 0 && arguments[0] == "!ping")
-        {
-            string id = j->getID();
-            Stanza *parent = Stanza::createIqStanza(source, id, StanzaIqGet);
-            Tag *tag = new Tag(parent, "ping", "xmlns", "urn:xmpp:ping", false);
-
-            j->trackID(this, id, PING_CONTEXT);
-
-            clock_t raw_time = clock();
-            
-            j->send(parent);
-
-            pingTimes[id] = raw_time;
-                
-            log(utf8(L"Отправлен пакет ping на адрес ") + source.full() + utf8(L"."));
-            
-            return true;
-        }
-        else if(arguments.size() > 1 && arguments[0] == "!log" && from_muc)
-        {
-            string mask = command.substr(5);
-            string message = logSearch(mask, source.bare());
-            
-            MUCRoom *room = getRoom(source.bare());
-            if(room)
-                room->send(message);
-
-            return true;
-        }
-        else if(arguments.size() > 2 && arguments[0] == "!log" && !from_muc)
-        {
-            string mask = command.substr(command.find(arguments[1]) + arguments[1].length() + 1);
-            string message;
-            
-            MUCRoom *room = getRoom(arguments[1]);
-            if(room)
-                message = logSearch(mask, room->name() + "@" + room->service());
-            else
-                message = logSearch(mask, arguments[1]);
-
-            Stanza *s = Stanza::createMessageStanza(source, message);
-
-            j->send(s);
-            
-            return true;
-        }
-        else if(arguments.size() > 2 && arguments[0] == "!log_i" && from_muc)
-        {
-            string mask = command.substr(command.find(arguments[1]) + arguments[1].length() + 1);
-            string message = logSearch(mask, source.bare(), atoi(arguments[1].c_str()));
-            
-            MUCRoom *room = getRoom(source.bare());
-            if(room)
-                room->send(message);
-
-            return true;
-        }
-        else if(arguments.size() > 2 && arguments[0] == "!log_i" && !from_muc)
-        {
-            string mask = command.substr(command.find(arguments[2]) + arguments[2].length() + 1);
-            string message;
-
-            MUCRoom *room = getRoom(arguments[1]);
-            if(room)
-                message = logSearch(mask, room->name() + "@" + room->service(), atoi(arguments[2].c_str()));
-            else
-                message = logSearch(mask, arguments[1], atoi(arguments[2].c_str()));
-            Stanza *s = Stanza::createMessageStanza(source, message);
-
-            j->send(s);
-
-            return true;
-        }
-        else if(arguments.size() > 2 && arguments[0] == "!stat" && !from_muc)
-        {
-            string conf_name = arguments[1];
-            string nick = command.substr(command.find(arguments[1]) + arguments[1].length() + 1);
-            string message;
-
-            MUCRoom *room = getRoom(arguments[1]);
-            if(room)
-                message = logStat(room->name() + "@" + room->service(), nick);
-            else
-                message = logStat(arguments[1], nick);
-            Stanza *s = Stanza::createMessageStanza(source, message);
-
-            j->send(s);
-
-            return true;
-        }
-        else if(arguments.size() > 1 && arguments[0] == "!stat" && from_muc)
-        {
-            string nick = command.substr(arguments[0].length() + 1);
-            string message = logStat(source.bare(), nick);
-            
-            MUCRoom *room = getRoom(source.bare());
-            if(room)
-                room->send(message);
-
-            return true;
-        }
-        else if(arguments.size() > 1 && arguments[0] == "!topten" && !from_muc)
-        {
-            string conf_name = arguments[1];
-            string message;
-
-            MUCRoom *room = getRoom(arguments[1]);
-            if(room)
-                message = logStat(room->name() + "@" + room->service());
-            else
-                message = logStat(arguments[1]);
-            Stanza *s = Stanza::createMessageStanza(source, message);
-
-            j->send(s);
-
-            return true;
-        }*/
     }
 
     return "";
+}
+
+/*
+ * Registers new command for bot.
+ */
+void ChtonianBot::registerCommand(const Command &newCommand)
+{
+    log(UTF8(L"Registering command ") + newCommand.name + UTF8(L"."));
+    commands.push_back(newCommand);
 }
 
 bool ChtonianBot::handleIqID(gloox::Stanza *stanza, int context)
