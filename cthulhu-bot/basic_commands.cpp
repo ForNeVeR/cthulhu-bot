@@ -7,18 +7,24 @@
 using namespace gloox;
 using namespace std;
 
-string enter_cmd(const vector<string> &args, ChtonianBot &bot);
-string exit_cmd(const vector<string> &args, ChtonianBot &bot);
-string help_cmd(const vector<string> &args, ChtonianBot &bot);
-string nick_cmd(const vector<string> &args, ChtonianBot &bot);
-string say_cmd(const vector<string> &args, ChtonianBot &bot);
+string enter_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot);
+string exit_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot);
+string help_cmd(const vector<string> &arg, const int accessLevel,
+    ChtonianBot &bot);
+string nick_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot);
+string say_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot);
 
 
 void ChtonianBot::registerAllBasicCommands()
 {
+    // This macro registers command named "!name" as function name_cmd().
 #define REGISTER_BASIC_COMMAND(name, syntax, args, access) \
     registerCommand(Command(UTF8(L"!" L#name),             \
-        UTF8(L"!" L#name L" " L ## syntax), args, access, &name##_cmd))
+        UTF8(L"!" L#name L" " L##syntax), args, access, &name##_cmd))
 
     log(UTF8(L"Registering basic commands..."));
 
@@ -31,7 +37,8 @@ void ChtonianBot::registerAllBasicCommands()
 #undef REGISTER_BASIC_COMMAND
 }
 
-string enter_cmd(const vector<string> &args, ChtonianBot &bot)
+string enter_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot)
 {
     if(!bot.getRoom(args[1]))
     {
@@ -44,7 +51,8 @@ string enter_cmd(const vector<string> &args, ChtonianBot &bot)
         + UTF8(L".");
 }
 
-string exit_cmd(const vector<string> &args, ChtonianBot &bot)
+string exit_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot)
 {
     bot.log(UTF8(L"Leaving..."));
     bot.j->disconnect();
@@ -52,20 +60,23 @@ string exit_cmd(const vector<string> &args, ChtonianBot &bot)
     return "";
 }
 
-string help_cmd(const vector<string> &args, ChtonianBot &bot)
+string help_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot)
 {
-    string response = UTF8(L"Avaliable commands:");
+    string response = UTF8(L"Available commands:");
     
     for(vector<Command>::iterator cmd = bot.commands.begin();
         cmd != bot.commands.end(); ++cmd)
     {
-        response += UTF8(L"\n") + (*cmd).syntax;
+        if(cmd->accessLevel <= accessLevel)
+            response += UTF8(L"\n") + cmd->syntax;
     }
 
     return response;
 }
 
-string nick_cmd(const vector<string> &args, ChtonianBot &bot)
+string nick_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot)
 {
     MUCRoom *room = bot.getRoom(args[1]);
     if(room)
@@ -78,7 +89,8 @@ string nick_cmd(const vector<string> &args, ChtonianBot &bot)
             L"conferences.");
 }
 
-string say_cmd(const vector<string> &args, ChtonianBot &bot)
+string say_cmd(const vector<string> &args, const int accessLevel,
+    ChtonianBot &bot)
 {
     MUCRoom *room = bot.getRoom(args[1]);
     if(room)

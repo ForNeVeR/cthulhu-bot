@@ -62,15 +62,15 @@ private:
     // Basic commands stuff
     void registerAllBasicCommands();
     friend std::string enter_cmd(const std::vector<std::string> &args,
-        ChtonianBot &bot);
+        const int accessLevel, ChtonianBot &bot);
     friend std::string exit_cmd(const std::vector<std::string> &args,
-        ChtonianBot &bot);
+        const int accessLevel, ChtonianBot &bot);
     friend std::string help_cmd(const std::vector<std::string> &args,
-        ChtonianBot &bot);
+        const int accessLevel, ChtonianBot &bot);
     friend std::string nick_cmd(const std::vector<std::string> &args,
-        ChtonianBot &bot);
+        const int accessLevel, ChtonianBot &bot);
     friend std::string say_cmd(const std::vector<std::string> &args,
-        ChtonianBot &bot);
+        const int accessLevel, ChtonianBot &bot);
 
     // History
     friend void history_add(const std::tm &utc_datetime,

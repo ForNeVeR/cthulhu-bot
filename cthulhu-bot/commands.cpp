@@ -137,7 +137,7 @@ string ChtonianBot::executeCommand(const string &command,
                 && arguments.size() == cmd->argsCount + 1
                 && accessLevel >= cmd->accessLevel)
             {
-                return cmd->execute(arguments, *this);
+                return cmd->execute(arguments, accessLevel, *this);
             }
         }
     }

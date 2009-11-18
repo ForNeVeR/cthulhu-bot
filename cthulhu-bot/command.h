@@ -16,7 +16,8 @@ class ChtonianBot;
 class Command
 {
     typedef std::string (* executionFunctionPtr)
-        (const std::vector<std::string> &args, ChtonianBot &bot);
+        (const std::vector<std::string> &args, const int accessLevel,
+        ChtonianBot &bot);
 
 public:
     std::string name;
