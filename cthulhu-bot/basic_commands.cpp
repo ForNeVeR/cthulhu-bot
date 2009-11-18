@@ -16,9 +16,9 @@ string say_cmd(const vector<string> &args, ChtonianBot &bot);
 
 void ChtonianBot::registerAllBasicCommands()
 {
-#define REGISTER_BASIC_COMMAND(name, syntax, args, access)                   \
-    registerCommand(Command(UTF8(L"!" L#name), UTF8(L"!" L#name L" " L ## syntax), \
-        args, access, &name##_cmd))
+#define REGISTER_BASIC_COMMAND(name, syntax, args, access) \
+    registerCommand(Command(UTF8(L"!" L#name),             \
+        UTF8(L"!" L#name L" " L ## syntax), args, access, &name##_cmd))
 
     log(UTF8(L"Registering basic commands..."));
 
