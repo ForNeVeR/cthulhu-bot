@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\Lib\gloox\src;..\..\Lib\boost_1_40_0"
+				AdditionalIncludeDirectories="..\..\Lib\gloox\src;..\..\Lib\boost_1_41_0"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;GLOOX_IMPORTS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -67,7 +67,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="..\..\Lib\gloox\Debug\gloox.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="..\..\Lib\boost_1_40_0\stage\lib"
+				AdditionalLibraryDirectories="..\..\Lib\boost_1_41_0\stage\lib"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

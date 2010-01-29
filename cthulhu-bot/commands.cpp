@@ -70,9 +70,7 @@ bool ChtonianBot::parseCommand(const std::string &str,
     
     const wregex command_name(L"^(![^\\s]+).*");
     const wregex simple_arg(L"^([^\\s]+).*");
-    const wregex quoted_arg(L"^\"(.*?[^\\\\])\".*");
-    // TODO: This variant of quoted_arg does not accept escaping of anything
-    // but quote character '"'.
+    const wregex quoted_arg(L"^\"(.*?(?<!\\\\)(\\\\\\\\)*)\".*");
 
     result.clear();
 
