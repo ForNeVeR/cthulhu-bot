@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="gloox">
+</Property><Property Name="Solution File" Value="C:\Temp\gloox-1.0\gloox.sln">
+</Property><Property Name="Date" Value="20 августа 2011 г.">
+</Property><Property Name="Time" Value="18:52:23">
+</Property></Properties><Event ErrorLevel="0" Project="gloox" Source="gloox.vcproj" Description="Converting project file 'C:\Temp\gloox-1.0\gloox.vcproj'.">
+</Event><Event ErrorLevel="1" Project="gloox" Source="gloox.vcproj" Description="VCWebServiceProxyGeneratorTool is no longer supported. The tool has been removed from your project settings.">
+</Event><Event ErrorLevel="0" Project="gloox" Source="gloox.vcproj" Description="Done converting to new project file 'C:\Temp\gloox-1.0\gloox.vcxproj'.">
+</Event><Event ErrorLevel="3" Project="gloox" Source="gloox.vcproj" Description="Converted">
+</Event></UpgradeLog>

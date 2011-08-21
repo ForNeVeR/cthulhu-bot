@@ -8,7 +8,7 @@
 #include <vector>
 using namespace std;
 
-#include "../utfcpp/source/utf8.h"
+#include "../3rd-party/utfcpp/utf8.h"
 
 string UTF8(const wchar_t *wc_string)
 {

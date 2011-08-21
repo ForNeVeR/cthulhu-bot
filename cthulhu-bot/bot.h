@@ -15,6 +15,7 @@
 #include <client.h>
 #include <connectionlistener.h>
 #include <iqhandler.h>
+#include <message.h>
 #include <messagehandler.h>
 #include <mucroom.h>
 #include <mucroomhandler.h>
@@ -24,18 +25,15 @@
 #include "unicode.h"
 
 class ChtonianBot : public gloox::MessageHandler,
-    public gloox::SubscriptionHandler, public gloox::IqHandler,
-    public gloox::MUCRoomHandler, public gloox::ConnectionListener
+    public gloox::SubscriptionHandler, public gloox::MUCRoomHandler,
+    public gloox::ConnectionListener
 {
 private:
     // Common resources
-    //std::map<std::string, std::time_t> pingTimes; // Ping packet id => ping packet send time
-    std::auto_ptr<gloox::Client> j; // Why "j"? But why not?
+    std::unique_ptr<gloox::Client> j; // Why "j"? But why not?
     std::vector<gloox::MUCRoom *> rooms;
     boost::program_options::variables_map config;
     std::vector<Command> commands;
-
-    //const static int PING_CONTEXT = 0;
 
     // Access levels
     int getAccessLevel(std::string source);
@@ -81,20 +79,16 @@ private:
 public:
     ChtonianBot(const std::string &config_name);
 
-    virtual void handleMessage(gloox::Stanza *stanza,
-        gloox::MessageSession *session = 0);
+    virtual void handleMessage(const gloox::Message &message,
+        gloox::MessageSession *session);
 
-    virtual bool handleIqID(gloox::Stanza *stanza, int context);
-    virtual bool handleIq(gloox::Stanza *stanza);
-
-    virtual void handleSubscription(gloox::Stanza *stanza);
+    virtual void handleSubscription(const gloox::Subscription &subscription);
 
     virtual void handleMUCParticipantPresence(gloox::MUCRoom *room,
         const gloox::MUCRoomParticipant participant,
-        gloox::Presence presence);
+        const gloox::Presence &presence);
     virtual void handleMUCMessage(gloox::MUCRoom *room,
-        const std::string &nick, const std::string &message, bool history,
-        const std::string &when, bool privateMessage);
+        const gloox::Message &message, bool history);
     virtual bool handleMUCRoomCreation(gloox::MUCRoom *room);
     virtual void handleMUCSubject(gloox::MUCRoom *room,
         const std::string &nick, const std::string &subject);
@@ -105,7 +99,7 @@ public:
     virtual void handleMUCInfo(gloox::MUCRoom *room, int features,
         const std::string &name, const gloox::DataForm *infoForm);
     virtual void handleMUCItems(gloox::MUCRoom *room,
-        const gloox::StringMap &items);
+        const gloox::Disco::ItemList &items);
 
     virtual void onConnect();
     virtual void onDisconnect(gloox::ConnectionError e);

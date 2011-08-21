@@ -11,46 +11,47 @@ using namespace boost;
 using namespace gloox;
 using namespace std;
 
-void ChtonianBot::handleMessage(Stanza *stanza, MessageSession *session)
+void ChtonianBot::handleMessage(const Message &message, MessageSession *session)
 {
-    log(UTF8(L"<") + stanza->from().full() + UTF8(L"> ") + stanza->body());
+    log(UTF8(L"<") + message.from().full() + UTF8(L"> ") + message.body());
     
-    string response = executeCommand(stanza->body(),
-        getAccessLevel(stanza->from().bare()));
+    string response = executeCommand(message.body(),
+        getAccessLevel(message.from().bare()));
     if(response != "")
     {
-        Stanza *s = Stanza::createMessageStanza(stanza->from(), response);
-        j->send(s);
-        log(UTF8(L"-> ") + stanza->from().full() + UTF8(L": ") + response);
+        Message m(Message::Chat, message.from(), response);
+        j->send(m);
+        log(UTF8(L"-> ") + message.from().full() + UTF8(L": ") + response);
     }
 }
 
-void ChtonianBot::handleMUCMessage(MUCRoom *room, const string &nick,
-    const string &message, bool history, const string &when,
-    bool privateMessage)
+void ChtonianBot::handleMUCMessage(MUCRoom *room, const Message &message,
+    bool history)
 {
-    if(!history) // We ignore historical messages.
+    if(!history) // Ignore historical messages.
     {
+        auto nick = message.from().username();
+
         string room_jid = room->name() + UTF8(L"@") + room->service();
 
-        confLog(room_jid, nick, message);
+        confLog(room_jid, nick, message.body());
 
-        string response = executeCommand(message, 0);
+        string response = executeCommand(message.body(), 0);
         if(response != "")
         {
             log(UTF8(L"<") + room_jid + UTF8(L"/") + nick + UTF8(L"> ")
-                + message);
+                + message.body());
             
-            if(!privateMessage)
+            if(message.subtype() == Message::Groupchat)
             {
                 room->send(response);
                 log(UTF8(L"-> ") + room_jid + UTF8(L": ") + response);
             }
             else
             {
-                Stanza *s = Stanza::createMessageStanza(JID(room_jid
-                    + UTF8(L"/") + nick), response);
-                j->send(s);
+                Message m(Message::Chat, JID(room_jid + UTF8(L"/") + nick),
+                    response);
+                j->send(m);
                 log(UTF8(L"-> <") + room_jid + UTF8(L"/") + nick + UTF8(L">: ")
                     + response);
             }
@@ -150,62 +151,4 @@ void ChtonianBot::registerCommand(const Command &newCommand)
 {
     log(UTF8(L"Registering command ") + newCommand.name + UTF8(L"."));
     commands.push_back(newCommand);
-}
-
-bool ChtonianBot::handleIqID(gloox::Stanza *stanza, int context)
-{
-    /*ostringstream log_ss;
-    log_ss << utf8(L"Получен iq пакет по контексту ") << context << utf8(L".");
-    log(log_ss.str());
-
-    switch(context)
-    {
-    case PING_CONTEXT:
-        {
-            map<string, time_t>::iterator ping_time_iter = pingTimes.find(stanza->id());
-            if(ping_time_iter != pingTimes.end())
-            {
-                clock_t raw_time = clock();
-
-                float time_delta = static_cast<float>(raw_time - ping_time_iter->second) / CLOCKS_PER_SEC;
-
-                ostringstream message;
-                if(stanza->subtype() != StanzaIqResult)
-                    message << utf8(L"Ваш клиент не поддерживает XEP-0199, тем не менее, время отклика было определено. ");
-                message << utf8(L"Время отклика от вас составило ") << time_delta << utf8(L" секунд.");
-
-                bool sent = false;
-
-                for(int i = 0; i < rooms.size(); i++)
-                {
-                    if((rooms[i]->name() + "@" + rooms[i]->service()) == stanza->from().bare())
-                    {
-                        // this mean that message will be sent to conference
-                        rooms[i]->send(stanza->from().resource() + utf8(L": ") + message.str());
-                        sent = true;
-                        break;
-                    }
-                }
-                
-                if(!sent)
-                {
-                    // this mean that ping query came not from muc, but from regular contact
-                    Stanza *s = Stanza::createMessageStanza(stanza->from(), message.str());
-                    j->send(s);
-                }
-
-                pingTimes.erase(ping_time_iter);
-                
-                log(utf8(L"Отправлен ответ на ping от ") + stanza->from().full() + utf8(L": \"")
-                    + message.str() + utf8(L"\"."));
-
-                return true;
-            }
-        }
-        break;
-    default:
-        return false;
-    }*/
-
-    return false;
 }

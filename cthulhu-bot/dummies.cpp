@@ -9,20 +9,15 @@
 using namespace gloox;
 using namespace std;
 
-bool ChtonianBot::handleIq(Stanza *stanza)
-{
-	return false;
-}
-
 void ChtonianBot::handleMUCParticipantPresence(MUCRoom *room,
-    const MUCRoomParticipant participant, Presence presence)
+    const MUCRoomParticipant participant, const Presence &presence)
 {
     
 }
 
 bool ChtonianBot::handleMUCRoomCreation(MUCRoom *room)
 {
-	return false;
+    return false;
 }
 
 void ChtonianBot::handleMUCSubject(MUCRoom *room, const string &nick, 
@@ -48,7 +43,7 @@ void ChtonianBot::handleMUCInfo(MUCRoom *room, int features,
 
 }
 
-void ChtonianBot::handleMUCItems(MUCRoom *room, const StringMap &items)
+void ChtonianBot::handleMUCItems(MUCRoom *room, const Disco::ItemList &items)
 {
 
 }

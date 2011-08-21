@@ -95,7 +95,7 @@ string bf_cmd(const vector<string> &args, const int accessLevel,
                 ++pos_in_code;
             break;
         case ',':
-            return UTF8(L"Sorry, operator ',' does not works.");
+            return UTF8(L"Operator ',' not supported.");
         case '.':
             if(memory[pos_in_mem] < 9)
             {

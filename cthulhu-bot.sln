@@ -1,7 +1,14 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cthulhu-bot", "cthulhu-bot\cthulhu-bot.vcproj", "{8570E3F7-B2E9-4C28-B507-39A1C654F98B}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cthulhu-bot", "cthulhu-bot\cthulhu-bot.vcxproj", "{8570E3F7-B2E9-4C28-B507-39A1C654F98B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4DDB9C8A-C4A7-4518-A470-0B88629D8B66} = {4DDB9C8A-C4A7-4518-A470-0B88629D8B66}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gloox 1.0", "3rd-party\gloox\gloox.vcxproj", "{4DDB9C8A-C4A7-4518-A470-0B88629D8B66}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "history-import", "history-import\history-import.vcxproj", "{B390C0BB-B7BB-4A02-AE61-7E436BB9F816}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +20,14 @@ Global
 		{8570E3F7-B2E9-4C28-B507-39A1C654F98B}.Debug|Win32.Build.0 = Debug|Win32
 		{8570E3F7-B2E9-4C28-B507-39A1C654F98B}.Release|Win32.ActiveCfg = Release|Win32
 		{8570E3F7-B2E9-4C28-B507-39A1C654F98B}.Release|Win32.Build.0 = Release|Win32
+		{4DDB9C8A-C4A7-4518-A470-0B88629D8B66}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4DDB9C8A-C4A7-4518-A470-0B88629D8B66}.Debug|Win32.Build.0 = Debug|Win32
+		{4DDB9C8A-C4A7-4518-A470-0B88629D8B66}.Release|Win32.ActiveCfg = Release|Win32
+		{4DDB9C8A-C4A7-4518-A470-0B88629D8B66}.Release|Win32.Build.0 = Release|Win32
+		{B390C0BB-B7BB-4A02-AE61-7E436BB9F816}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B390C0BB-B7BB-4A02-AE61-7E436BB9F816}.Debug|Win32.Build.0 = Debug|Win32
+		{B390C0BB-B7BB-4A02-AE61-7E436BB9F816}.Release|Win32.ActiveCfg = Release|Win32
+		{B390C0BB-B7BB-4A02-AE61-7E436BB9F816}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

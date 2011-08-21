@@ -32,23 +32,23 @@ ChtonianBot::ChtonianBot(const string &config_name)
     po::notify(config);
 
     JID jid(config["login.jid"].as<string>());
-    j = auto_ptr<Client>(new Client(jid,
+    j = unique_ptr<Client>(new Client(jid,
         config["login.password"].as<string>()));
 
-    j->disco()->setVersion("cthulhu-bot",
-        "0.0 compiled at " __DATE__ " " __TIME__);
+    j->disco()->setVersion("cthulhu-bot", 
+        "0.1 compiled at " __DATE__ " " __TIME__);
 
     j->registerMessageHandler(this);
     j->registerSubscriptionHandler(this);
     j->registerConnectionListener(this);
-    j->setPresence(PresenceAvailable);
+    j->setPresence(Presence::Available, 0);
 
     registerAllBasicCommands();
 
     log(UTF8(L"Entering server (") + config["login.jid"].as<string>()
         + UTF8(L")..."));
 
-    j->connect();
+    j->connect(true);
 }
 
 int ChtonianBot::getAccessLevel(string source)
@@ -113,25 +113,23 @@ string ChtonianBot::finishRoomName(const string &name) const
     return name;
 }
 
-void ChtonianBot::handleSubscription(gloox::Stanza *stanza)
+void ChtonianBot::handleSubscription(const Subscription &subscription)
 {
-    if (getAccessLevel(stanza->from().bare()) >= 100)
+    if (getAccessLevel(subscription.from().bare()) >= 100)
     {
-        Stanza *s = Stanza::createSubscriptionStanza(stanza->from(), "",
-            StanzaS10nSubscribed);
+        Subscription s(Subscription::Subscribed, subscription.from());
         j->send(s);
         log(UTF8(L"Trying to accept subscription request from ")
-            + stanza->from().full() + UTF8(L"."));
-        s = Stanza::createMessageStanza(stanza->from(),
+            + subscription.from().full() + UTF8(L"."));
+        Message m(Message::Chat, subscription.from(),
             UTF8(L"Welcome, commander."));
         j->send(s);
     }
     else
     {
-        Stanza *s = Stanza::createSubscriptionStanza(stanza->from(), "",
-            StanzaS10nUnsubscribed);
+        Subscription s(Subscription::Unsubscribed, subscription.from());
         j->send(s);
-        log(UTF8(L"Subscription request from ") + stanza->from().full()
+        log(UTF8(L"Subscription request from ") + subscription.from().full()
             + UTF8(L" was rejected."));
     }
 }
